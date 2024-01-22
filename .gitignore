@@ -1,0 +1,5 @@
+deps
+*debug*
+.vscode
+
+Manifest.toml

@@ -1,0 +1,4 @@
+name = "SPEI"
+uuid = "863d9554-05df-40e7-98c7-6eb0d2a6ac33"
+authors = ["Dongdong Kong <kongdd@users.noreply.github.com>"]
+version = "0.1.0"

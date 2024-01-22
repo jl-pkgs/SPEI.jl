@@ -1,4 +1,4 @@
-function logLogisticFit(beta::AbstractVector)
+function fit_logLogistic(beta::AbstractVector)
   params = zeros(3)
   g1 = 0.0
   g2 = 0.0
@@ -16,12 +16,12 @@ function logLogisticFit(beta::AbstractVector)
 end
 
 
-function logLogisticCDF(value::Float64, params::AbstractVector)
+function cdf_logLogistic(value::Float64, params::AbstractVector)
   return 1 / (1 + ((params[2] / (value - params[1]))^params[3]))
 end
 
 
-function standardGaussianInvCDF(prob::Float64)
+function invcdf_standardGaussian(prob::Float64)
   C = [2.515517, 0.802853, 0.010328]
   d = [0, 1.432788, 0.189269, 0.001308]
 

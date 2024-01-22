@@ -1,13 +1,13 @@
 function spei(x::AbstractVector)
   x2 = x[.!isnan(x)] |> sort
   beta = pwm(x2, 0.0, 0.0, 0)
-  params = logLogisticFit(beta)
+  params = fit_logLogistic(beta)
 
   n = length(x)
   z = zeros(Float64, n)
   for i in 1:n
-    prob = logLogisticCDF(x[i], params)
-    z[i] = -standardGaussianInvCDF(prob)
+    prob = cdf_logLogistic(x[i], params)
+    z[i] = -invcdf_standardGaussian(prob)
   end
   (; z, coef=params)
 end
@@ -24,7 +24,7 @@ function spi(x::AbstractVector)
   for i in eachindex(z)
     if !isnan(x[i])
       p = q .+ (1 - q) * cdf(D, x[i])
-      z[i] = quantile(Normal(), p)
+      z[i] = qnorm(p)
       x[i] < 0 && (z[i] = -Inf)
     end
   end
@@ -39,7 +39,7 @@ function spi_c(x::AbstractVector)
 
   beta = pwm(x_nozero, 0.0, 0.0, 0)
   
-  params = gammaFit(beta)
+  params = fit_gamma(beta)
   z = fill(NaN, length(x))
   for i = eachindex(z)
     if x[i] > 0

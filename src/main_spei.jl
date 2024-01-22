@@ -1,5 +1,8 @@
+"""
+    spei(x::AbstractVector)
+"""
 function spei(x::AbstractVector)
-  x2 = x[.!isnan(x)] |> sort
+  x2 = x[.!isnan.(x)] |> sort
   beta = pwm(x2, 0.0, 0.0, 0)
   params = _fit_logLogistic(beta)
 
@@ -23,7 +26,7 @@ end
   + `mle`: maximum likelihood estimation, julia solver
 """
 function spi(x::AbstractVector; fit="lmom")
-  x2 = x[.!isnan(x)]
+  x2 = x[.!isnan.(x)]
   x_nozero = x2[x2.>0]
   q = 1 - length(x_nozero) / length(x2) # probability of zero
   

@@ -17,7 +17,7 @@ end
 
 
 function fit_logLogistic(x::AbstractVector)
-  x2 = x[.!isnan(x)] |> sort
+  x2 = x[.!isnan.(x)] |> sort
   beta = pwm(x2, 0.0, 0.0, 0)
   params = _fit_logLogistic(beta)
   params

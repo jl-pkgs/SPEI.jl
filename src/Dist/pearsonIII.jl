@@ -1,4 +1,4 @@
-function pearsonIIIFit(L::Array{Float64,1})
+function pearsonIIIFit(L::AbstractVector)
   params = zeros(3)
   sqrtPi = sqrt(pi)
   lmom_ratio = L[4] / L[3]  # third l-Moment ratio
@@ -21,7 +21,7 @@ function pearsonIIIFit(L::Array{Float64,1})
   params
 end
 
-function pearsonIIIStandardize(value::Float64, params::Array{Float64,1})
+function pearsonIIIStandardize(value::Float64, params::AbstractVector)
   origin = params[1]  # location
   alfa = params[2]    # shape
   beta = params[3]    # scale
@@ -33,6 +33,6 @@ function pearsonIIIStandardize(value::Float64, params::Array{Float64,1})
   else
     z = -3.09023230616779
   end
-  
+
   return z
 end

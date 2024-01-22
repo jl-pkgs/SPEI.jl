@@ -1,4 +1,4 @@
-function logLogisticFit(beta::Array{Float64,1})
+function logLogisticFit(beta::AbstractVector)
   params = zeros(3)
   g1 = 0.0
   g2 = 0.0
@@ -16,7 +16,7 @@ function logLogisticFit(beta::Array{Float64,1})
 end
 
 
-function logLogisticCDF(value::Float64, params::Array{Float64,1})
+function logLogisticCDF(value::Float64, params::AbstractVector)
   return 1 / (1 + ((params[2] / (value - params[1]))^params[3]))
 end
 

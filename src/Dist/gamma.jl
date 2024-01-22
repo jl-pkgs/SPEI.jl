@@ -1,4 +1,4 @@
-function gammaFit(L::Array{Float64,1})
+function gammaFit(L::AbstractVector)
   params = zeros(2)
   lmom_ratio = L[3] / L[2]  # second l-Moment ratio
   
@@ -18,7 +18,7 @@ function gammaFit(L::Array{Float64,1})
 end
 
 
-function gammaStandardize(value::Float64, params::Array{Float64,1})
+function q_gamma(value::Float64, params::AbstractVector)
   alfa = params[1]
   beta = params[2]
   

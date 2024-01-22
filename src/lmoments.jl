@@ -57,3 +57,28 @@ function lmoments(series::AbstractVector{Float64}, A::Float64, B::Float64)
   # lMoment[4] = alpha[1] - 12*alpha[2] + 30*alpha[3] - 20*alpha[4]
   lmom
 end
+
+
+# https://github.com/cran/TLMoments/blob/master/src/PWM.cpp
+function PWM(x::AbstractVector, r::Int)
+  n = length(x)
+  xs = sort(x)
+  w = 0.0
+  vorfaktor = 1.0
+
+  for k = n:-1:(n-r)
+    vorfaktor /= k
+  end
+
+  sum = 0.0
+  for j = 1:n
+    w = 1.0
+    for i = 1:r
+      w *= (j - i)
+    end
+    sum += w * xs[j]
+  end
+  return sum * vorfaktor
+end
+
+export PWM

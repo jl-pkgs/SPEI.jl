@@ -56,6 +56,15 @@ function fit_gamma(x::AbstractVector)
   pelgam(lmom)
 end
 
+# function fit_gamma(x::AbstractVector)
+#   x2 = x[.!isnan(x)] |> sort
+#   beta = pwm(x2, 0.0, 0.0, 0) # 这里pwm计算存在问题
+#   pelgam(beta)
+# end
+
+
+export lmom_fit_gamma
+
 # function lmrgam(para::Vector{Float64}, nmom::Int=2)
 #   CONST = 0.564189583547756287
 #   a0 = 0.32573501

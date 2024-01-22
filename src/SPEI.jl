@@ -1,12 +1,16 @@
 module SPEI
 
 export spei, spi, spi_c
+export qnorm
 
 using Distributions
 using SpecialFunctions: gamma_inc, lgamma, loggamma
 
 
-include("math.jl")
+qnorm(p::Real) = quantile(Normal(), p)
+pow = ^
+
+
 include("PWM.jl")
 include("lmoments.jl")
 

@@ -1,23 +1,32 @@
-function fit_logLogistic(beta::AbstractVector)
-  params = zeros(3)
+function _fit_logLogistic(beta::AbstractVector)
+  # params = zeros(3)
   g1 = 0.0
   g2 = 0.0
 
   # estimate gamma parameter
-  params[3] = (2 * beta[2] - beta[1]) / (6 * beta[2] - beta[1] - 6 * beta[3])
-  g1 = exp(loggamma(1 + 1 / params[3]))
-  g2 = exp(loggamma(1 - 1 / params[3]))
+  γ = (2 * beta[2] - beta[1]) / (6 * beta[2] - beta[1] - 6 * beta[3])
+  g1 = exp(loggamma(1 + 1 / γ))
+  g2 = exp(loggamma(1 - 1 / γ))
 
   # estimate alpha parameter
-  params[2] = (beta[1] - 2 * beta[2]) * params[3] / (g1 * g2)
+  α = (beta[1] - 2 * beta[2]) * γ / (g1 * g2) # params[2]
   # estimate beta parameter
-  params[1] = beta[1] - params[2] * g1 * g2
+  β = beta[1] - α * g1 * g2                   # params[1]
+  β, α, γ
+end
+
+
+function fit_logLogistic(x::AbstractVector)
+  x2 = x[.!isnan(x)] |> sort
+  beta = pwm(x2, 0.0, 0.0, 0)
+  params = _fit_logLogistic(beta)
   params
 end
 
 
-function cdf_logLogistic(value::Float64, params::AbstractVector)
-  return 1 / (1 + ((params[2] / (value - params[1]))^params[3]))
+function cdf_logLogistic(x::Float64, params)
+  β, α, γ = params[1:3]
+  1 / (1 + ((α / (x - β))^γ))
 end
 
 
@@ -33,3 +42,5 @@ function invcdf_standardGaussian(prob::Float64)
   prob > 0.5 && (resul = -resul)
   return resul
 end
+
+export fit_logLogistic

@@ -1,7 +1,3 @@
-qnorm(p::Real) = quantile(Normal(), p)
-
-pow = ^
-
 # function loggamma(xx::Float64)
 #   cof = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5]
 #   y = x = xx
@@ -14,5 +10,3 @@ pow = ^
 #   end
 #   return -tmp + log(2.5066282746310005 * ser / x)
 # end
-
-export qnorm

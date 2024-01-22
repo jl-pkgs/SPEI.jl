@@ -1,7 +1,7 @@
 function pearsonIIIFit(L::Array{Float64,1})
+  params = zeros(3)
   sqrtPi = sqrt(pi)
   lmom_ratio = L[4] / L[3]  # third l-Moment ratio
-  params = zeros(3)
 
   if lmom_ratio > 0.0 && lmom_ratio < 0.333333
     t = 3 * pi * lmom_ratio * lmom_ratio
@@ -33,6 +33,6 @@ function pearsonIIIStandardize(value::Float64, params::Array{Float64,1})
   else
     z = -3.09023230616779
   end
-
+  
   return z
 end

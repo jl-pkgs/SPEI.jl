@@ -57,4 +57,3 @@ function lmoments(series::AbstractVector{Float64}, A::Float64, B::Float64)
   # lMoment[4] = alpha[1] - 12*alpha[2] + 30*alpha[3] - 20*alpha[4]
   lmom
 end
-

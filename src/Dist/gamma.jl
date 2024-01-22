@@ -1,6 +1,5 @@
 function gammaFit(L::Array{Float64,1})
   params = zeros(2)
-  # lmom_ratio, 如何计算
   lmom_ratio = L[3] / L[2]  # second l-Moment ratio
   
   if lmom_ratio > 0.0 && lmom_ratio < 0.5
@@ -18,9 +17,11 @@ function gammaFit(L::Array{Float64,1})
   params
 end
 
+
 function gammaStandardize(value::Float64, params::Array{Float64,1})
   alfa = params[1]
   beta = params[2]
+  
   y = value / alfa / beta
   z = (y^(1 / 3) + 1 / (9 * beta) - 1) * sqrt(9 * beta)
   return z

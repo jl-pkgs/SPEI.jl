@@ -26,7 +26,7 @@ end
 
 function cdf_logLogistic(x::Real, params)
   β, α, γ = params[1:3]
-  1 / (1 + ((α / (x - β))^γ))
+  1 / (1 + (pow(α / (x - β), γ)))
 end
 
 

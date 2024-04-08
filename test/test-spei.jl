@@ -10,7 +10,7 @@ end
 R"""
 library(SPEI2)
 """
-wb = R"wb" |> rcopy
+wb = R"wb" |> rcopy |> x -> Float32.(x)
 
 @testset "spei" begin
   @time r_R = R"cal_spei(wb)" |> rcopy

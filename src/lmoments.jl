@@ -5,7 +5,7 @@ A<=B<=0).
 
 This are alpha PWMs, following Rao & Hamed 2000, eqs. 3.1.4 and 3.1.6
 """
-function pwm(series::AbstractVector{Float64}, A::Float64, B::Float64, isBeta::Int)
+function pwm(series::AbstractVector{T}, A::Float64, B::Float64, isBeta::Int) where {T<:Real}
   acum = zeros(Float64, 3)
   pwms = zeros(Float64, 3)
   F = 0.0
@@ -45,10 +45,10 @@ function pwm(series::AbstractVector{Float64}, A::Float64, B::Float64, isBeta::In
 end
 
 
-function lmoments(series::AbstractVector{Float64}, A::Float64, B::Float64)
+function lmoments(series::AbstractVector{T}, A::Float64, B::Float64) where { T<:Real }
   # alpha = zeros(Float64, 3)
   # Calculate the first three PWMs
-  lmom = zeros(Float64, 3)
+  lmom = zeros(T, 3)
   alpha = pwm(series, A, B, 0)
 
   lmom[1] = alpha[1]

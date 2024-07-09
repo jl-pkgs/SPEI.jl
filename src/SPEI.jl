@@ -22,7 +22,7 @@ end
 include("PWM.jl")
 include("lmoments.jl")
 
-include("Dist/Dist.jl")
+include("DIST/DIST.jl")
 include("main_spei.jl")
 
 end # module SPEI

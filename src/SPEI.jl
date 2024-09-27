@@ -24,5 +24,6 @@ include("lmoments.jl")
 
 include("DIST/DIST.jl")
 include("main_spei.jl")
+include("ZSI.jl")
 
 end # module SPEI

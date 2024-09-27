@@ -2,6 +2,8 @@ using Test
 using SPEI
 using Serialization
 
+
+include("test-ZSI.jl")
 nanmaximum(x) = maximum(x[.!isnan.(x)])
 
 wb = deserialize("../data/wb")

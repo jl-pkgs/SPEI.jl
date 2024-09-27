@@ -11,7 +11,8 @@ end
 
 # add a reference function to spi
 function param_spi(x_ref::AbstractVector; fit="lmom")
-  x2 = x_ref[.!isnan.(x_ref)]
+  lgl = .!isnan.(x_ref)
+  x2 = @view x_ref[lgl]
   x_nozero = x2[x2.>0]
   q = 1 - length(x_nozero) / length(x2) # probability of zero
 
@@ -31,7 +32,7 @@ end
 function spei(x::AbstractVector, x_ref::AbstractVector=x)
   params = param_spei(x_ref)
   z = zeros(Float64, length(x))
-  
+
   for i in eachindex(z)
     prob = cdf_logLogistic(x[i], params)
     z[i] = -invcdf_standardGaussian(prob)
@@ -59,16 +60,24 @@ end
 function spi(x::AbstractVector, x_ref::AbstractVector=x; fit="lmom")
   param, q = param_spi(x_ref; fit)
   D = Gamma(param...)
-
+  
   z = fill(NaN, length(x))
-  for i in eachindex(z)
+  spi!(z, x, x_ref; fit)
+  (; z, coef=params(D))
+end
+
+function spi!(z::AbstractVector, x::AbstractVector, x_ref::AbstractVector=x; fit="lmom")
+  param, q = param_spi(x_ref; fit)
+  D = Gamma(param...)
+
+  @inbounds for i in eachindex(z)
     if !isnan(x[i])
       p = q .+ (1 - q) * cdf(D, x[i])
       z[i] = qnorm(p)
       x[i] < 0 && (z[i] = -Inf)
     end
   end
-  (; z, coef=params(D))
+  return z
 end
 
 # TODO: 需要添加scale参数

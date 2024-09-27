@@ -33,7 +33,7 @@ end
 const _C = [2.515517, 0.802853, 0.010328]
 const _d = [0.0, 1.432788, 0.189269, 0.001308]
 
-function invcdf_standardGaussian(prob::Float64)
+function invcdf_standardGaussian(prob::Real)
   W = prob <= 0.5 ? sqrt(-2 * log(prob)) : sqrt(-2 * log(1 - prob))
   WW = W * W
   WWW = WW * W

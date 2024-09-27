@@ -1,5 +1,8 @@
 function param_spei(x_ref::AbstractVector)
-  x2 = x_ref[.!isnan.(x_ref)] |> sort # have to sort
+  lgl = .!isnan.(x_ref)
+  x2 = x_ref[lgl]
+  sort!(x2) # have to sort
+
   beta = pwm(x2, 0.0, 0.0, 0)
   params = _fit_logLogistic(beta)
   params
@@ -28,12 +31,20 @@ end
 function spei(x::AbstractVector, x_ref::AbstractVector=x)
   params = param_spei(x_ref)
   z = zeros(Float64, length(x))
-
+  
   for i in eachindex(z)
     prob = cdf_logLogistic(x[i], params)
     z[i] = -invcdf_standardGaussian(prob)
   end
   (; z, coef=params)
+end
+
+function spei!(z::AbstractVector, x::AbstractVector, x_ref::AbstractVector=x)
+  params = param_spei(x_ref)
+  @inbounds for i in eachindex(z)
+    prob = cdf_logLogistic(x[i], params)
+    z[i] = -invcdf_standardGaussian(prob)
+  end
 end
 
 # 这里需要提供一个reference period
@@ -48,7 +59,7 @@ end
 function spi(x::AbstractVector, x_ref::AbstractVector=x; fit="lmom")
   param, q = param_spi(x_ref; fit)
   D = Gamma(param...)
-  
+
   z = fill(NaN, length(x))
   for i in eachindex(z)
     if !isnan(x[i])
@@ -61,3 +72,4 @@ function spi(x::AbstractVector, x_ref::AbstractVector=x; fit="lmom")
 end
 
 # TODO: 需要添加scale参数
+export spei!

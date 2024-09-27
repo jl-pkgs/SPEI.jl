@@ -30,14 +30,14 @@ function cdf_logLogistic(x::Real, params)
 end
 
 
-function invcdf_standardGaussian(prob::Float64)
-  C = [2.515517, 0.802853, 0.010328]
-  d = [0, 1.432788, 0.189269, 0.001308]
+const _C = [2.515517, 0.802853, 0.010328]
+const _d = [0.0, 1.432788, 0.189269, 0.001308]
 
+function invcdf_standardGaussian(prob::Float64)
   W = prob <= 0.5 ? sqrt(-2 * log(prob)) : sqrt(-2 * log(1 - prob))
   WW = W * W
   WWW = WW * W
-  resul = W - (C[1] + C[2] * W + C[3] * WW) / (1 + d[2] * W + d[3] * WW + d[4] * WWW)
+  resul = W - (_C[1] + _C[2] * W + _C[3] * WW) / (1 + _d[2] * W + _d[3] * WW + _d[4] * WWW)
 
   prob > 0.5 && (resul = -resul)
   return resul

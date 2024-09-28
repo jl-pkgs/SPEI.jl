@@ -1,14 +1,13 @@
 using Test
 using SPEI
 using Serialization
-
-
-include("test-ZSI.jl")
 nanmaximum(x) = maximum(x[.!isnan.(x)])
 
 dir_proj = "$(@__DIR__)/.."
 wb = deserialize("$dir_proj/data/wb")
-x = wb[wb .> 0]
+x = wb[wb.>0]
+
+include("test-drought.jl")
 
 @testset "gamma and loglogistic" begin
   @test fit_gamma(x) == (1.2729799501897179, 17.435758906451866)

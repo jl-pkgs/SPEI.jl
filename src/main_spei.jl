@@ -8,7 +8,6 @@ function param_spei(x_ref::AbstractVector)
   params
 end
 
-
 # add a reference function to spi
 function param_spi(x_ref::AbstractVector; fit="lmom")
   lgl = .!isnan.(x_ref)
@@ -26,7 +25,19 @@ function param_spi(x_ref::AbstractVector; fit="lmom")
 end
 
 
-function spei!(z::AbstractVector, x::AbstractVector, x_ref::AbstractVector=x)
+
+"""
+    spei(x::AbstractVector, x_ref::AbstractVector=x)
+    spei!(z::AbstractVector{T}, x::AbstractVector, x_ref::AbstractVector=x; nmin=3) where {T<:Real}
+"""
+function spei!(z::AbstractVector{T}, x::AbstractVector, x_ref::AbstractVector=x; nmin=3) where {T<:Real}
+  # 如果有效观测数量不够，需要跳过
+  n_valid = 0
+  for xi in x_ref
+    xi == xi && (n_valid += 1)
+  end
+  n_valid < nmin && (return T(NaN), T(NaN), T(NaN)) # β, α, γ
+
   params = param_spei(x_ref)
   @inbounds for i in eachindex(z)
     prob = cdf_logLogistic(x[i], params)
@@ -35,7 +46,22 @@ function spei!(z::AbstractVector, x::AbstractVector, x_ref::AbstractVector=x)
   params
 end
 
-function spi!(z::AbstractVector, x::AbstractVector, x_ref::AbstractVector=x; fit="lmom")
+
+"""
+    spi(x::AbstractVector; fit="lmom")
+
+# Arguements
+- `fit`: 
+  + `lmom`: use lmoments to fit gamma distribution, R version
+  + `mle`: maximum likelihood estimation, julia solver
+"""
+function spi!(z::AbstractVector, x::AbstractVector, x_ref::AbstractVector=x; nmin=3, fit="lmom")
+  n_valid = 0
+  for xi in x_ref
+    xi > 0 && (n_valid += 1)
+  end
+  n_valid < nmin && (return T(NaN), T(NaN)) # β, α, γ
+
   param, q = param_spi(x_ref; fit)
   D = Gamma(param...)
 
@@ -50,28 +76,17 @@ function spi!(z::AbstractVector, x::AbstractVector, x_ref::AbstractVector=x; fit
 end
 
 
-"""
-    spei(x::AbstractVector)
-"""
-function spei(x::AbstractVector, x_ref::AbstractVector=x)
-  z = zeros(Float64, length(x))
-  params = spei!(z, x, x_ref)
+function spei(x::AbstractVector{T}, x_ref::AbstractVector{T}=x; nmin::Int=3) where {T<:Real}
+  z = fill(T(NaN), length(x))
+  params = spei!(z, x, x_ref; nmin)
   (; z, coef=params)
 end
 
-"""
-    spi(x::AbstractVector; fit="lmom")
-
-# Arguements
-- `fit`: 
-  + `lmom`: use lmoments to fit gamma distribution, R version
-  + `mle`: maximum likelihood estimation, julia solver
-"""
-function spi(x::AbstractVector, x_ref::AbstractVector=x; fit="lmom")
-  z = fill(NaN, length(x))
-  params = spi!(z, x, x_ref; fit)
+function spi(x::AbstractVector{T}, x_ref::AbstractVector{T}=x; nmin::Int=3, fit="lmom") where {T<:Real}
+  z = fill(T(NaN), length(x))
+  params = spi!(z, x, x_ref; nmin, fit)
   (; z, coef=params)
 end
 
 
-export spei!
+export spei!, spi!, spei, spi

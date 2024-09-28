@@ -19,15 +19,20 @@ qnorm(p::Real) = quantile(Normal(), p)
 export pow
 # pow = ^
 # import Base:^
-pow(x, y) = x^y
-function pow(x::T, y::AbstractFloat) where {T<:AbstractFloat}
-  x < 0 ? T(NaN) : x^y
+# "Faster method for exponentiation"
+# @fastmath pow(x::Real, y::Real) = exp(y * log(x))
+@fastmath pow(x, y) = exp(y * log(x))
+
+@fastmath function pow(x::T, y::AbstractFloat) where {T<:AbstractFloat}
+  x < 0 ? T(NaN) : exp(y * log(x))
 end
 
 include("PWM.jl")
 include("lmoments.jl")
 
-include("DIST/DIST.jl")
+include("DIST/gamma.jl")
+include("DIST/logLogistic.jl")
+# include("DIST/DIST.jl")
 include("main_spei.jl")
 
 include("drought_ZSI.jl")

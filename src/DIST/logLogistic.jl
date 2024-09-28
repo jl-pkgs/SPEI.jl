@@ -23,8 +23,8 @@ function fit_logLogistic(x::AbstractVector)
 end
 
 
-function cdf_logLogistic(x::Real, params)
-  β, α, γ = params[1:3]
+function cdf_logLogistic(x::Real, params::Tuple)
+  @inbounds β, α, γ = params[1:3] # tuple
   1 / (1 + (pow(α / (x - β), γ)))
 end
 

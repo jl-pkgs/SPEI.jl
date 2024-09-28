@@ -35,7 +35,7 @@ function drought_ZSI(A::AbstractArray{T,3}, dates;
       end
     end
   end
-  R
+  return R
 end
 
 

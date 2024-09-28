@@ -5,52 +5,45 @@ A<=B<=0).
 
 This are alpha PWMs, following Rao & Hamed 2000, eqs. 3.1.4 and 3.1.6
 """
-function pwm!(acum::AbstractVector{T}, pwms::AbstractVector{T},
-  series::AbstractVector{T}, A::Float64, B::Float64, isBeta::Int) where {T<:Real}
-
+function pwm(series::AbstractVector{T}, A::Float64, B::Float64, isBeta::Int) where {T<:Real}
   F = 0.0
   n = length(series)
+  acum1 = acum2 = acum3 = T(0)
 
   if A == 0 && B == 0  # use unbiased estimator
     for i = 1:n
-      acum[1] += series[i]
+      acum1 += series[i]
       if isBeta == 0  # compute alpha PWMs
-        acum[2] += series[i] * (n - i)
-        acum[3] += series[i] * (n - i) * (n - i - 1)
+        acum2 += series[i] * (n - i)
+        acum3 += series[i] * (n - i) * (n - i - 1)
       end
       if isBeta == 1  # compute beta PWMs
-        acum[2] += series[i] * (i - 1)
-        acum[3] += series[i] * (i - 1) * (i - 2)
+        acum2 += series[i] * (i - 1)
+        acum3 += series[i] * (i - 1) * (i - 2)
       end
     end
   else  # use plotting-position (biased) estimator
     for i = 1:n
-      acum[1] += series[i]
+      acum1 += series[i]
       F = (i + A) / (n + B)
       if isBeta == 0  # compute alpha PWMs
-        acum[2] += series[i] * (1 - F)
-        acum[3] += series[i] * (1 - F) * (1 - F)
+        acum2 += series[i] * (1 - F)
+        acum3 += series[i] * (1 - F) * (1 - F)
       end
       if isBeta == 1  # compute beta PWMs
-        acum[2] += series[i] * F
-        acum[3] += series[i] * F * F
+        acum2 += series[i] * F
+        acum3 += series[i] * F * F
       end
     end
   end
 
-  pwms[1] = acum[1] / n
-  pwms[2] = acum[2] / n / (n - 1)
-  pwms[3] = acum[3] / n / ((n - 1) * (n - 2))
-  pwms
+  β1 = acum1 / n
+  β2 = acum2 / n / (n - 1)
+  β3 = acum3 / n / ((n - 1) * (n - 2))
+  β1, β2, β3
 end
 
-function pwm(series::AbstractVector{T}, A::Float64, B::Float64, isBeta::Int) where {T<:Real}
-  acum = zeros(T, 3)
-  pwms = zeros(T, 3)
-  pwm!(acum, pwms, series, A, B, isBeta)
-end
-
-function lmoments(series::AbstractVector{T}, A::Float64, B::Float64) where { T<:Real }
+function lmoments(series::AbstractVector{T}, A::Float64, B::Float64) where {T<:Real}
   # alpha = zeros(Float64, 3)
   # Calculate the first three PWMs
   lmom = zeros(T, 3)

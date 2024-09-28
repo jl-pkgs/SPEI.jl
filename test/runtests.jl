@@ -6,7 +6,8 @@ using Serialization
 include("test-ZSI.jl")
 nanmaximum(x) = maximum(x[.!isnan.(x)])
 
-wb = deserialize("../data/wb")
+dir_proj = "$(@__DIR__)/.."
+wb = deserialize("$dir_proj/data/wb")
 x = wb[wb .> 0]
 
 @testset "gamma and loglogistic" begin

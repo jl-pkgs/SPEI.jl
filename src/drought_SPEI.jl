@@ -16,13 +16,7 @@ function drought_SPEI(A::AbstractArray{T,3}, dates;
 
   nlon, nlat, ntime = size(A)
   A2 = similar(A) .* 0
-  @inbounds @par for k = scale:ntime
-    for j = 1:nlon, i = 1:nlat
-      _x = @view A[i, j, k-scale+1:k]
-      A2[i, j, k] = nanmean(_x)
-    end
-  end
-  A2[:, :, 1:scale-1] .= T(NaN)
+  accu_scale!(A2, A, scale)
 
   by = fun_date.(dates; delta)
   grps = unique_sort(by)
@@ -46,6 +40,18 @@ function drought_SPEI(A::AbstractArray{T,3}, dates;
     end
   end
   R
+end
+
+function accu_scale!(A2::AbstractArray{<:Real,3}, A::AbstractArray{<:Real,3}, scale::Int)
+  nlon, nlat, ntime = size(A)
+  @inbounds @par for k = scale:ntime
+    for j = 1:nlon, i = 1:nlat
+      _x = @view A[i, j, k-scale+1:k]
+      A2[i, j, k] = nanmean(_x)
+    end
+  end
+  A2[:, :, 1:scale-1] .= T(NaN)
+  A2
 end
 
 

@@ -3,8 +3,8 @@ function param_spei(x_ref::AbstractVector)
   x2 = x_ref[lgl]
   sort!(x2) # have to sort
 
-  beta = pwm(x2, 0.0, 0.0, 0)
-  params = _fit_logLogistic(beta)
+  β1, β2, β3 = pwm(x2, 0.0, 0.0, 0) # improve at here
+  params = _fit_logLogistic(β1, β2, β3)
   params
 end
 
@@ -26,44 +26,13 @@ function param_spi(x_ref::AbstractVector; fit="lmom")
 end
 
 
-"""
-    spei(x::AbstractVector)
-"""
-function spei(x::AbstractVector, x_ref::AbstractVector=x)
-  params = param_spei(x_ref)
-  z = zeros(Float64, length(x))
-
-  for i in eachindex(z)
-    prob = cdf_logLogistic(x[i], params)
-    z[i] = -invcdf_standardGaussian(prob)
-  end
-  (; z, coef=params)
-end
-
 function spei!(z::AbstractVector, x::AbstractVector, x_ref::AbstractVector=x)
   params = param_spei(x_ref)
   @inbounds for i in eachindex(z)
     prob = cdf_logLogistic(x[i], params)
     z[i] = -invcdf_standardGaussian(prob)
   end
-end
-
-# 这里需要提供一个reference period
-"""
-    spi(x::AbstractVector; fit="lmom")
-
-# Arguements
-- `fit`: 
-  + `lmom`: use lmoments to fit gamma distribution, R version
-  + `mle`: maximum likelihood estimation, julia solver
-"""
-function spi(x::AbstractVector, x_ref::AbstractVector=x; fit="lmom")
-  param, q = param_spi(x_ref; fit)
-  D = Gamma(param...)
-  
-  z = fill(NaN, length(x))
-  spi!(z, x, x_ref; fit)
-  (; z, coef=params(D))
+  params
 end
 
 function spi!(z::AbstractVector, x::AbstractVector, x_ref::AbstractVector=x; fit="lmom")
@@ -77,8 +46,32 @@ function spi!(z::AbstractVector, x::AbstractVector, x_ref::AbstractVector=x; fit
       x[i] < 0 && (z[i] = -Inf)
     end
   end
-  return z
+  params(D)
 end
 
-# TODO: 需要添加scale参数
+
+"""
+    spei(x::AbstractVector)
+"""
+function spei(x::AbstractVector, x_ref::AbstractVector=x)
+  z = zeros(Float64, length(x))
+  params = spei!(z, x, x_ref)
+  (; z, coef=params)
+end
+
+"""
+    spi(x::AbstractVector; fit="lmom")
+
+# Arguements
+- `fit`: 
+  + `lmom`: use lmoments to fit gamma distribution, R version
+  + `mle`: maximum likelihood estimation, julia solver
+"""
+function spi(x::AbstractVector, x_ref::AbstractVector=x; fit="lmom")
+  z = fill(NaN, length(x))
+  params = spi!(z, x, x_ref; fit)
+  (; z, coef=params)
+end
+
+
 export spei!

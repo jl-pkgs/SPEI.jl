@@ -85,7 +85,7 @@ end
 
 function accu_scale!(x2::AbstractVector{T}, x::AbstractVector{T}, scale::Int) where {T<:Real}
   ntime = length(x)
-  for k = scale:ntime
+  @inbounds for k = scale:ntime
     _x = @view x[k-scale+1:k]
     x2[k] = nanmean(_x)
   end

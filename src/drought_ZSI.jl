@@ -8,7 +8,7 @@ Calculate the ZSI (Z-Score Index) of the input data `A` along the time dimension
 > Extremely fast!
 """
 function drought_ZSI(A::AbstractArray{T,3}, dates;
-  ref=(2000, 2020),
+  ref=(2000, 2020), nmin::Int=3,
   fun_date=get_dn, delta::Int=8,
   progress=true, parallel=true) where {T<:Real}
 
@@ -26,10 +26,16 @@ function drought_ZSI(A::AbstractArray{T,3}, dates;
     I_ref = I[findall(ref[1] .<= year.(dates[I]) .<= ref[2])]
 
     for j = 1:nlat, i = 1:nlon
+      n_valid = 0
+      for k in I_ref
+        !isnan(A[i, j, k]) && (n_valid += 1)
+      end
+      n_valid < nmin && continue
+
       _x_ref = @view A[i, j, I_ref] # 两次嵌套会导致速度变慢
       μ = nanmean(_x_ref)
       sd = nanstd(_x_ref)
-      
+
       for _i in I
         R[i, j, _i] = (A[i, j, _i] - μ) / sd
       end

@@ -7,7 +7,7 @@ export qnorm
 using Distributions
 using SpecialFunctions: gamma_inc, lgamma, loggamma
 using Ipaper, Dates
-using NaNStatistics
+import NaNStatistics:nanmean, nanstd
 
 function get_dn(date; delta=8)
   days = Dates.dayofyear(date)
